@@ -1,4 +1,5 @@
-from urlparse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs
+
 
 class MagnetUrl(object):
     url = None
@@ -19,7 +20,7 @@ class MagnetUrl(object):
         files = []
         index = 0
         #: lambda checks if entry is valid
-        has_data = lambda e: any(map(lambda x: x is not None, e.values()))
+        has_data = lambda e: any([x is not None for x in list(e.values())])
         entry = self.__file_entry(0)
         while has_data(entry):
             files.append(entry)
@@ -54,7 +55,7 @@ class MagnetUrl(object):
         #: that magnet data may be in these two properties.
         data = parse_qs(parsed.query or parsed.path[1:])
         query_data = {}
-        for param_name, values_list in data.items():
+        for param_name, values_list in list(data.items()):
             #we're unpacking values
             if len(values_list) == 1:
                 query_data[param_name] = values_list[0]
@@ -98,9 +99,7 @@ class MagnetUrl(object):
 
     def __file_entry(self, index):
         return dict(
-                    display_name=self.__display_name(index),
-                    data_size=self.__data_size(index),
-                    hash_type=self.__hash_type(index),
-                    hash=self.__hash(index)
-                    )
-
+            display_name=self.__display_name(index),
+            data_size=self.__data_size(index),
+            hash_type=self.__hash_type(index),
+            hash=self.__hash(index))
